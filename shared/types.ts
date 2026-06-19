@@ -54,6 +54,8 @@ export interface CompareResponse {
 
 export type DistributionType = 'random' | 'increasing' | 'decreasing' | 'peak';
 
+export type DifficultyLevel = 'easy' | 'medium' | 'hard';
+
 export interface GenerateRequest {
   count: number;
   minHeight: number;
@@ -104,3 +106,47 @@ export const GROUND_TRUTH_ALGORITHM: AlgorithmType = 'binary_search';
 
 export const DEVIATION_WARN_THRESHOLD = 0.05;
 export const DEVIATION_DANGER_THRESHOLD = 0.15;
+
+export interface InverseGenerateRequest {
+  targetEnergy: number;
+  count: number;
+  difficulty: DifficultyLevel;
+  seed?: number;
+  baseHeight?: number;
+}
+
+export interface InverseGenerateResponse {
+  heights: number[];
+  targetEnergy: number;
+  actualEnergy: number;
+  errorRate: number;
+  difficulty: DifficultyLevel;
+  seed: number;
+  minEnergyPerBuilding: number[];
+  maxEnergyEstimate: number;
+  terrainStats: {
+    peaks: number;
+    valleys: number;
+    avgHeight: number;
+    heightVariance: number;
+    dangerZones: number;
+  };
+}
+
+export const DIFFICULTY_INFO: Record<DifficultyLevel, { name: string; description: string; color: string }> = {
+  easy: {
+    name: '简单',
+    description: '单调递增，能量平稳下降',
+    color: 'emerald',
+  },
+  medium: {
+    name: '中等',
+    description: '少量峰谷，能量有小幅波动',
+    color: 'amber',
+  },
+  hard: {
+    name: '困难',
+    description: '剧烈波动，多处能量危险临界',
+    color: 'rose',
+  },
+};

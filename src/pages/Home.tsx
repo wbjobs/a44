@@ -2,8 +2,10 @@ import { motion } from 'framer-motion';
 import { useSolver } from '@/hooks/useSolver';
 import { BuildingChart } from '@/components/BuildingChart';
 import { EnergyChart } from '@/components/EnergyChart';
+import { EnergyTerrainChart } from '@/components/EnergyTerrainChart';
 import { AlgorithmSelector } from '@/components/AlgorithmSelector';
 import { DataGenerator } from '@/components/DataGenerator';
+import { InverseGenerator } from '@/components/InverseGenerator';
 import { ResultTable } from '@/components/ResultTable';
 import { PlaybackControl } from '@/components/PlaybackControl';
 import { ValidationBanner } from '@/components/ValidationBanner';
@@ -109,6 +111,9 @@ export default function Home() {
             <div className="h-[380px]">
               <EnergyChart />
             </div>
+            <div className="h-[420px]">
+              <EnergyTerrainChart />
+            </div>
           </motion.section>
 
           <motion.section
@@ -141,6 +146,7 @@ export default function Home() {
 
             <PlaybackControl />
             <DataGenerator />
+            <InverseGenerator />
           </motion.section>
 
           <motion.section

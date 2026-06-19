@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { AlgorithmType, SolveResponse, DistributionType, CompareResponse } from '@shared/types';
+import type { AlgorithmType, SolveResponse, DistributionType, CompareResponse, InverseGenerateResponse, DifficultyLevel } from '@shared/types';
 
 export type GroundTruth = CompareResponse['groundTruth'];
 export type Validation = CompareResponse['validation'];
@@ -20,6 +20,12 @@ interface AppState {
   isComputing: boolean;
   selectedResultIndex: number;
 
+  inverseResult: InverseGenerateResponse | null;
+  inverseTargetEnergy: number;
+  inverseCount: number;
+  inverseDifficulty: DifficultyLevel;
+  isGeneratingInverse: boolean;
+
   setHeights: (heights: number[]) => void;
   updateHeight: (index: number, value: number) => void;
   toggleAlgorithm: (algo: AlgorithmType) => void;
@@ -27,6 +33,13 @@ interface AppState {
   setCompareResult: (resp: CompareResponse) => void;
   setIsComputing: (val: boolean) => void;
   setSelectedResultIndex: (idx: number) => void;
+
+  setInverseTargetEnergy: (val: number) => void;
+  setInverseCount: (val: number) => void;
+  setInverseDifficulty: (val: DifficultyLevel) => void;
+  setInverseResult: (res: InverseGenerateResponse | null) => void;
+  setIsGeneratingInverse: (val: boolean) => void;
+  applyInverseResult: (res: InverseGenerateResponse) => void;
 
   setPlayback: (p: Partial<PlaybackState>) => void;
   resetPlayback: () => void;
@@ -49,6 +62,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   isComputing: false,
   selectedResultIndex: 0,
+
+  inverseResult: null,
+  inverseTargetEnergy: 100,
+  inverseCount: 12,
+  inverseDifficulty: 'medium',
+  isGeneratingInverse: false,
 
   setHeights: (heights) => {
     set({ heights, playback: { ...get().playback, currentStep: 0, isPlaying: false } });
@@ -104,6 +123,19 @@ export const useAppStore = create<AppState>((set, get) => ({
     const maxStep = Math.max(0, traceLen - 1);
     const nextStep = Math.min(maxStep, Math.max(0, current + delta));
     set({ playback: { ...get().playback, currentStep: nextStep } });
+  },
+
+  setInverseTargetEnergy: (val) => set({ inverseTargetEnergy: Math.max(0, val) }),
+  setInverseCount: (val) => set({ inverseCount: Math.max(2, Math.min(500, val)) }),
+  setInverseDifficulty: (val) => set({ inverseDifficulty: val }),
+  setInverseResult: (res) => set({ inverseResult: res }),
+  setIsGeneratingInverse: (val) => set({ isGeneratingInverse: val }),
+  applyInverseResult: (res) => {
+    set({
+      heights: res.heights,
+      inverseResult: res,
+      playback: { ...get().playback, currentStep: 0, isPlaying: false },
+    });
   },
 }));
 
