@@ -5,7 +5,7 @@ import type { CompareResponse } from '@shared/types';
 export function useSolver() {
   const heights = useAppStore((s) => s.heights);
   const selectedAlgorithms = useAppStore((s) => s.selectedAlgorithms);
-  const setResults = useAppStore((s) => s.setResults);
+  const setCompareResult = useAppStore((s) => s.setCompareResult);
   const setIsComputing = useAppStore((s) => s.setIsComputing);
   const resetPlayback = useAppStore((s) => s.resetPlayback);
 
@@ -13,7 +13,17 @@ export function useSolver() {
 
   const runSolve = useCallback(async () => {
     if (selectedAlgorithms.length === 0) {
-      setResults([]);
+      setCompareResult({
+        results: [],
+        groundTruth: null,
+        validation: {
+          hasGroundTruth: false,
+          totalAlgorithms: 0,
+          heuristicCount: 0,
+          alertedCount: 0,
+          maxDeviationRate: 0,
+        },
+      });
       return;
     }
 
@@ -31,7 +41,7 @@ export function useSolver() {
 
       if (res.ok) {
         const data: CompareResponse = await res.json();
-        setResults(data.results);
+        setCompareResult(data);
         resetPlayback();
       }
     } catch (e) {
@@ -39,14 +49,30 @@ export function useSolver() {
     } finally {
       setIsComputing(false);
     }
-  }, [heights, selectedAlgorithms, setResults, setIsComputing, resetPlayback]);
+  }, [
+    heights,
+    selectedAlgorithms,
+    setCompareResult,
+    setIsComputing,
+    resetPlayback,
+  ]);
 
   useEffect(() => {
     if (debounceRef.current !== null) {
       clearTimeout(debounceRef.current);
     }
     if (selectedAlgorithms.length === 0) {
-      setResults([]);
+      setCompareResult({
+        results: [],
+        groundTruth: null,
+        validation: {
+          hasGroundTruth: false,
+          totalAlgorithms: 0,
+          heuristicCount: 0,
+          alertedCount: 0,
+          maxDeviationRate: 0,
+        },
+      });
       return;
     }
     debounceRef.current = window.setTimeout(() => {
@@ -58,7 +84,7 @@ export function useSolver() {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [heights, selectedAlgorithms, runSolve, setResults]);
+  }, [heights, selectedAlgorithms, runSolve, setCompareResult]);
 
   return { runSolve };
 }

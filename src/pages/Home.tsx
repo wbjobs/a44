@@ -6,6 +6,7 @@ import { AlgorithmSelector } from '@/components/AlgorithmSelector';
 import { DataGenerator } from '@/components/DataGenerator';
 import { ResultTable } from '@/components/ResultTable';
 import { PlaybackControl } from '@/components/PlaybackControl';
+import { ValidationBanner } from '@/components/ValidationBanner';
 import {
   Bot,
   Github,
@@ -86,6 +87,15 @@ export default function Home() {
       </header>
 
       <main className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05, duration: 0.4 }}
+          className="mb-4"
+        >
+          <ValidationBanner />
+        </motion.div>
+
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
           <motion.section
             initial={{ opacity: 0, y: 20 }}

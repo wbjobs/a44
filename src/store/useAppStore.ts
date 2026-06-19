@@ -1,5 +1,8 @@
 import { create } from 'zustand';
-import type { AlgorithmType, SolveResponse, DistributionType } from '@shared/types';
+import type { AlgorithmType, SolveResponse, DistributionType, CompareResponse } from '@shared/types';
+
+export type GroundTruth = CompareResponse['groundTruth'];
+export type Validation = CompareResponse['validation'];
 
 export interface PlaybackState {
   isPlaying: boolean;
@@ -11,6 +14,8 @@ interface AppState {
   heights: number[];
   selectedAlgorithms: AlgorithmType[];
   results: SolveResponse[];
+  groundTruth: GroundTruth;
+  validation: Validation | null;
   playback: PlaybackState;
   isComputing: boolean;
   selectedResultIndex: number;
@@ -19,7 +24,7 @@ interface AppState {
   updateHeight: (index: number, value: number) => void;
   toggleAlgorithm: (algo: AlgorithmType) => void;
   setSelectedAlgorithms: (algos: AlgorithmType[]) => void;
-  setResults: (results: SolveResponse[]) => void;
+  setCompareResult: (resp: CompareResponse) => void;
   setIsComputing: (val: boolean) => void;
   setSelectedResultIndex: (idx: number) => void;
 
@@ -29,12 +34,14 @@ interface AppState {
 }
 
 const DEFAULT_HEIGHTS = [14, 28, 19, 42, 35, 56, 23, 31, 67, 45, 38, 29];
-const DEFAULT_ALGOS: AlgorithmType[] = ['binary_search', 'greedy', 'dynamic_programming'];
+const DEFAULT_ALGOS: AlgorithmType[] = ['binary_search', 'greedy', 'dynamic_programming', 'simulated_annealing'];
 
 export const useAppStore = create<AppState>((set, get) => ({
   heights: DEFAULT_HEIGHTS,
   selectedAlgorithms: DEFAULT_ALGOS,
   results: [],
+  groundTruth: null,
+  validation: null,
   playback: {
     isPlaying: false,
     currentStep: 0,
@@ -68,7 +75,14 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   setSelectedAlgorithms: (algos) => set({ selectedAlgorithms: algos }),
 
-  setResults: (results) => set({ results, selectedResultIndex: 0 }),
+  setCompareResult: (resp) => {
+    set({
+      results: resp.results,
+      groundTruth: resp.groundTruth,
+      validation: resp.validation,
+      selectedResultIndex: 0,
+    });
+  },
 
   setIsComputing: (val) => set({ isComputing: val }),
 
